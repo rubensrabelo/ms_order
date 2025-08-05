@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS tb_product (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    price DOUBLE PRECISION NOT NULL
+);
