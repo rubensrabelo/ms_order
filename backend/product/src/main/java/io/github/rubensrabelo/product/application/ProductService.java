@@ -6,13 +6,10 @@ import io.github.rubensrabelo.product.application.dto.ProductUpdateDTO;
 import io.github.rubensrabelo.product.application.exceptions.ResourceNotFoundException;
 import io.github.rubensrabelo.product.domain.Product;
 import io.github.rubensrabelo.product.infra.repository.ProductRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class ProductService {
@@ -54,5 +51,6 @@ public class ProductService {
     private void updateData(ProductUpdateDTO dtoUpdate, Product entity) {
         entity.setName(dtoUpdate.getName());
         entity.setPrice(dtoUpdate.getPrice());
+        entity.setDescription(dtoUpdate.getDescription());
     }
 }

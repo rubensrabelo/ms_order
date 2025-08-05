@@ -5,13 +5,13 @@ import java.util.Objects;
 public class ProductResponseDTO {
     private Long id;
     private String name;
+    private String description;
     private Double price;
 
     public ProductResponseDTO() {
     }
 
-    public ProductResponseDTO(Long id, String name, Double price) {
-        this.id = id;
+    public ProductResponseDTO(String name, String description, Double price) {
         this.name = name;
         this.price = price;
     }
@@ -32,6 +32,14 @@ public class ProductResponseDTO {
         this.name = name;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public Double getPrice() {
         return price;
     }
@@ -44,11 +52,11 @@ public class ProductResponseDTO {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         ProductResponseDTO that = (ProductResponseDTO) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(price, that.price);
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(description, that.description) && Objects.equals(price, that.price);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, price);
+        return Objects.hash(id, name, description, price);
     }
 }
