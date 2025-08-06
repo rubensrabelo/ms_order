@@ -6,6 +6,7 @@ import io.github.rubensrabelo.product.application.dto.ProductUpdateDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class ProductController {
             @RequestParam(value = "direction", defaultValue = "asc") String direction
     ) {
         var sortDirection = direction.equalsIgnoreCase("asc") ? Direction.ASC : Direction.DESC;
-        Pageable pageable = PageRequest.of(page, size, sortDirection);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, "name"));
         Page<ProductResponseDTO> dto = service.findAll(pageable);
         return ResponseEntity.ok().body(dto);
     }
