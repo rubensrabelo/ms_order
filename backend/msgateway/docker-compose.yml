@@ -1,0 +1,15 @@
+services:
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gateway
+    hostname: gateway
+    ports:
+      - "8080:8080"
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network:
+    external: true
