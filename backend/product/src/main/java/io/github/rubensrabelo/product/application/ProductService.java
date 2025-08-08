@@ -3,10 +3,13 @@ package io.github.rubensrabelo.product.application;
 import io.github.rubensrabelo.product.application.dto.ProductCreateDTO;
 import io.github.rubensrabelo.product.application.dto.ProductResponseDTO;
 import io.github.rubensrabelo.product.application.dto.ProductUpdateDTO;
-import io.github.rubensrabelo.product.application.exceptions.ResourceNotFoundException;
+import io.github.rubensrabelo.product.application.handler.exceptions.DatabaseException;
+import io.github.rubensrabelo.product.application.handler.exceptions.ResourceNotFoundException;
 import io.github.rubensrabelo.product.domain.Product;
 import io.github.rubensrabelo.product.infra.repository.ProductRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -46,6 +49,16 @@ public class ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found."));
         updateData(dtoUpdate, entity);
         return modelMapper.map(entity, ProductResponseDTO.class);
+    }
+
+    public void delete(Long id) {
+        try {
+            repository.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ResourceNotFoundException("Product not found.");
+        } catch (DataIntegrityViolationException e) {
+            throw new DatabaseException(e.getMessage());
+        }
     }
 
     private void updateData(ProductUpdateDTO dtoUpdate, Product entity) {
