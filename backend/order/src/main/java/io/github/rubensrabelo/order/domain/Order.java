@@ -1,10 +1,11 @@
 package io.github.rubensrabelo.order.domain;
 
-import io.github.rubensrabelo.order.application.dto.product.ProductResponseDTO;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "tb_order")
