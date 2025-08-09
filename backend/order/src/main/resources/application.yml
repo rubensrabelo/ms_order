@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: msorder
+  datasource:
+    url: jdbc:postgresql://db:5432/db_order
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eurekaserver:eurekaserver@eurekaserver:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+server:
+  port: 0
