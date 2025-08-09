@@ -20,6 +20,7 @@ public class MsgatewayApplication {
 		return builder
 				.routes()
 				.route(r -> r.path("/products/**").uri("lb://msproduct"))
+				.route(r -> r.path("/orders/**").uri("lb://msorder"))
 				.build();
 	}
 }
