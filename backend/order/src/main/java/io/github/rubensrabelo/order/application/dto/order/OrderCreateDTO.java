@@ -6,16 +6,16 @@ import java.util.Set;
 
 public class OrderCreateDTO {
 
-    private Set<Long> products = new HashSet<>();
+    private Set<Long> productsId = new HashSet<>();
 
     public OrderCreateDTO() {
     }
 
-    public Set<Long> getProducts() {
-        return products;
+    public Set<Long> getProductsId() {
+        return productsId;
     }
 
-    public void setProducts(Set<Long> products) {
-        this.products = products;
+    public void setProductsId(Set<Long> productsId) {
+        this.productsId = productsId;
     }
 }

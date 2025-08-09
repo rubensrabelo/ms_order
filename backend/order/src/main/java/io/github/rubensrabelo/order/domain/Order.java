@@ -22,8 +22,7 @@ public class Order {
     public Order() {
     }
 
-    public Order(LocalDateTime created, double totalAmount) {
-        this.created = created;
+    public Order(double totalAmount) {
         this.totalAmount = totalAmount;
     }
 
