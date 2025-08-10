@@ -20,7 +20,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -52,9 +52,30 @@ class ProductServiceTest {
     }
 
     @Test
+    void findById() {
+        Product entity = dataEntity.mockEntity(1);
+        ProductResponseDTO dto = dataDTO.mockDTO(1);
+
+        when(repository.findById(1L)).thenReturn(Optional.of(entity));
+        when(modelMapper.map(entity, ProductResponseDTO.class)).thenReturn(dto);
+
+        var result = service.findById(1L);
+
+        assertNotNull(result);
+        assertNotNull(result.getId());
+
+        assertEquals(dto.getName(), result.getName());
+        assertEquals(dto.getDescription(), result.getDescription());
+        assertEquals(dto.getPrice(), result.getPrice());
+
+        verify(repository, times(1)).findById(1L);
+        verify(modelMapper, times(1)).map(entity, ProductResponseDTO.class);
+    }
+
+    @Test
     void findAll() {
         List<Product> entities = dataEntity.mockListEntities(5);
-        List<ProductResponseDTO> dtos = dataDTO.mockListDTOs(5);
+        List<ProductResponseDTO> listDTO = dataDTO.mockListDTOs(5);
 
         Page<Product> page = new PageImpl<>(
                 entities,
@@ -65,7 +86,7 @@ class ProductServiceTest {
         when(repository.findAll(any(PageRequest.class))).thenReturn(page);
 
         for (int i = 0; i < entities.size(); i++) {
-            when(modelMapper.map(entities.get(i), ProductResponseDTO.class)).thenReturn(dtos.get(i));
+            when(modelMapper.map(entities.get(i), ProductResponseDTO.class)).thenReturn(listDTO.get(i));
         }
 
         var result = service.findAll(PageRequest.of(0, 10));
@@ -87,11 +108,9 @@ class ProductServiceTest {
     }
 
     @Test
-    void findById() {
-    }
-
-    @Test
     void create() {
+        ProductResponseDTO dtoResponse = dataDTO.mockDTO(1);
+        Product persisted = dataEntity.mockEntity(1);
     }
 
     @Test
@@ -100,5 +119,9 @@ class ProductServiceTest {
 
     @Test
     void delete() {
+        doNothing().when(repository).deleteById(1L);
+
+        assertDoesNotThrow(() -> service.delete(1L));
+        verify(repository, times(1)).deleteById(1L);
     }
 }
