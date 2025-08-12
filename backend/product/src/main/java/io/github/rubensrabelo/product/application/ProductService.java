@@ -48,6 +48,7 @@ public class ProductService {
         Product entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found."));
         updateData(dtoUpdate, entity);
+        repository.save(entity);
         return modelMapper.map(entity, ProductResponseDTO.class);
     }
 

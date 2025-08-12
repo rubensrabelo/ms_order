@@ -12,7 +12,7 @@ import java.util.Set;
 
 public class MockDTO {
 
-    public ProductResponseDTO mockDTO(int id) {
+    public ProductResponseDTO mockDTOResponse(int id) {
         ProductResponseDTO dtoResponse = new ProductResponseDTO();
         dtoResponse.setId((long) id);
         dtoResponse.setName("Name " + id);
@@ -21,7 +21,7 @@ public class MockDTO {
         return dtoResponse;
     }
 
-    public ProductCreateDTO mockCreateDTO(int id) {
+    public ProductCreateDTO mockDTOCreate(int id) {
         ProductCreateDTO dtoCreate = new ProductCreateDTO();
         dtoCreate.setName("Name " + id);
         dtoCreate.setDescription("Description " + id);
@@ -29,7 +29,7 @@ public class MockDTO {
         return dtoCreate;
     }
 
-    public ProductUpdateDTO mockUpdateDTO(int id) {
+    public ProductUpdateDTO mockDTOUpdate(int id) {
         ProductUpdateDTO dtoUpdate = new ProductUpdateDTO();
         dtoUpdate.setName("Name Update " + id);
         dtoUpdate.setDescription("Description Update " + id);
@@ -37,10 +37,10 @@ public class MockDTO {
         return dtoUpdate;
     }
 
-    public List<ProductResponseDTO> mockListDTOs(int qtd) {
+    public List<ProductResponseDTO> mockListDTOResponse(int qtd) {
         List<ProductResponseDTO> listDTOs = new ArrayList<>();
         for(int i = 0; i < qtd; i++)
-            listDTOs.add(mockDTO(i));
+            listDTOs.add(mockDTOResponse(i));
         return listDTOs;
     }
 }
