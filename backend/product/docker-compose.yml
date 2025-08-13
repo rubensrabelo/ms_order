@@ -26,4 +26,4 @@ networks:
     external: true
 
 volumes:
-  postgres_data:
+  postgres_product_data:
