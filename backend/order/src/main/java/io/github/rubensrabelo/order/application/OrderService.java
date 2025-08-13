@@ -36,13 +36,25 @@ public class OrderService {
 
     public Page<OrderResponseDTO> findAll(Pageable pageable) {
         return repository.findAll(pageable)
-                .map(entity -> modelMapper.map(entity, OrderResponseDTO.class));
+                .map(entity -> {
+                    OrderResponseDTO dto = modelMapper.map(entity, OrderResponseDTO.class);
+                    Set<ProductResponseDTO> products = entity.getProductsId().stream()
+                            .map(this::findProductById)
+                            .collect(Collectors.toSet());
+                    dto.setProducts(products);
+                    return dto;
+                });
     }
 
     public OrderResponseDTO findById(Long id) {
         Order entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found."));
-        return modelMapper.map(entity, OrderResponseDTO.class);
+        OrderResponseDTO dto = modelMapper.map(entity, OrderResponseDTO.class);
+        Set<ProductResponseDTO> products = entity.getProductsId().stream()
+                .map(this::findProductById)
+                .collect(Collectors.toSet());
+        dto.setProducts(products);
+        return dto;
     }
 
     public OrderResponseDTO create(OrderCreateDTO dtoCreate) {
