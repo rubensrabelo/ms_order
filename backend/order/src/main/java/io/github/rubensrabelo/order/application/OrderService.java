@@ -54,7 +54,7 @@ public class OrderService {
                 .sum();
 
         Order entity = new Order(total);
-        entity.setProducts(dtoCreate.getProductsId());
+        entity.setProductsId(dtoCreate.getProductsId());
 
         Order savedOrder = repository.save(entity);
 

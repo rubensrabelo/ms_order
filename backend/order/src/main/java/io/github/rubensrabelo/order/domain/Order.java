@@ -18,7 +18,12 @@ public class Order {
     private double totalAmount;
 
     @ElementCollection
-    private Set<Long> products = new HashSet<>();
+    @CollectionTable(
+            name = "tb_order_products",
+            joinColumns = @JoinColumn(name = "order_id")
+    )
+    @Column(name = "product_id")
+    private Set<Long> productsId = new HashSet<>();
 
     public Order() {
     }
@@ -56,12 +61,12 @@ public class Order {
         this.totalAmount = totalAmount;
     }
 
-    public Set<Long> getProducts() {
-        return products;
+    public Set<Long> getProductsId() {
+        return productsId;
     }
 
-    public void setProducts(Set<Long> products) {
-        this.products = products;
+    public void setProductsId(Set<Long> productsId) {
+        this.productsId = productsId;
     }
 
     @Override

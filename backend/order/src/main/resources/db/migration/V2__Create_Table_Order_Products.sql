@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS tb_order_products (
                                    order_id INT NOT NULL,
-                                   products INT NOT NULL,
+                                   product_id INT NOT NULL,
                                    CONSTRAINT fk_order FOREIGN KEY (order_id) REFERENCES tb_order (id) ON DELETE CASCADE
 );
 
