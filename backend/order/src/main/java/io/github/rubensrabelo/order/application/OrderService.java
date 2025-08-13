@@ -75,7 +75,7 @@ public class OrderService {
             throw new ResourceNotFoundException("Product with ID " + id + " not found.");
         } catch (FeignException e) {
             throw new IntegrationException(
-                    "Erro ao comunicar com Product Service: " + e.status() + " " + e.getMessage(), e
+                    "Erro ao comunicar com Product Service: " + e.status() + " " + e.getMessage()
             );
         }
     }
