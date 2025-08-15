@@ -1,8 +1,7 @@
-# Order Service
+# Backend
 
 ## Descrição
-O **Order Service** é responsável por gerenciar pedidos dentro de uma arquitetura de **microserviços**.  
-Ele se comunica com o **Product Service** usando **OpenFeign** para validar produtos antes de registrar o pedido.
+
 
 ---
 
@@ -18,7 +17,6 @@ Ele se comunica com o **Product Service** usando **OpenFeign** para validar prod
 ---
 
 ## Diagrama de Classes
-
 
 ```mermaid
 classDiagram
