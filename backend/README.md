@@ -18,6 +18,7 @@ Atualmente, a comunicação entre os serviços é feita por meio do **OpenFeign*
 * **OpenFeign** (comunicação entre microserviços)
 * **Eureka Client** (descoberta de serviços)
 * **Docker**
+* **Docker Compose**
 * **Mockito** (testes unitários)
 
 ---
