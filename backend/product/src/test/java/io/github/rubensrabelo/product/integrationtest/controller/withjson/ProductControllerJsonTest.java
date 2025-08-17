@@ -1,7 +1,8 @@
 package io.github.rubensrabelo.product.integrationtest.controller.withjson;
 
-import io.github.rubensrabelo.product.application.dto.ProductResponseDTO;
+import io.github.rubensrabelo.product.integrationtest.dto.ProductResponseDTO;
 import io.github.rubensrabelo.product.config.TestConfigs;
+import io.github.rubensrabelo.product.integrationtest.dto.wrappers.json.PageProductDTO;
 import io.github.rubensrabelo.product.integrationtest.testcontainers.AbstractIntegrationTest;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
@@ -64,6 +65,7 @@ public class ProductControllerJsonTest extends AbstractIntegrationTest {
 
         assertNotNull(createdProduct.getId());
         assertNotNull(createdProduct.getName());
+        assertNotNull(createdProduct.getDescription());
         assertNotNull(createdProduct.getPrice());
 
         Assertions.assertTrue(createdProduct.getId() > 0);
@@ -75,22 +77,118 @@ public class ProductControllerJsonTest extends AbstractIntegrationTest {
 
     @Test
     @Order(2)
-    void update() {
+    void update() throws IOException {
+        product.setName("Product Updated");
+
+        var content = given(specification)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(product)
+                .when()
+                .put("/{id}", product.getId())
+                .then()
+                .statusCode(200)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .extract()
+                .body()
+                .asString();
+
+        ProductResponseDTO createdProduct = objectMapper.readValue(content, ProductResponseDTO.class);
+        product = createdProduct;
+
+        assertNotNull(createdProduct.getId());
+        assertNotNull(createdProduct.getName());
+        assertNotNull(createdProduct.getDescription());
+        assertNotNull(createdProduct.getPrice());
+
+        Assertions.assertTrue(createdProduct.getId() > 0);
+
+        assertEquals("Product Updated", createdProduct.getName());
+        assertEquals("Description Product 01", createdProduct.getDescription());
+        assertEquals(10.00, createdProduct.getPrice());
     }
 
     @Test
     @Order(3)
-    void findById() {
+    void findById() throws IOException {
+        var content = given(specification)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .pathParams("id", product.getId())
+                .when()
+                .get("{id}")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .asString();
+
+        ProductResponseDTO createdProduct = objectMapper.readValue(content, ProductResponseDTO.class);
+
+        assertNotNull(createdProduct.getId());
+        assertNotNull(createdProduct.getName());
+        assertNotNull(createdProduct.getDescription());
+        assertNotNull(createdProduct.getPrice());
+
+        Assertions.assertTrue(createdProduct.getId() > 0);
+
+        assertEquals("Product Updated", createdProduct.getName());
+        assertEquals("Description Product 01", createdProduct.getDescription());
+        assertEquals(10.00, createdProduct.getPrice());
     }
 
     @Test
     @Order(4)
     void delete() {
+        given(specification)
+                .pathParam("id", product.getId())
+                .when()
+                .delete("{id}")
+                .then()
+                .statusCode(204);
     }
 
     @Test
     @Order(5)
-    void findAll() {
+    void findAll() throws IOException {
+        var content = given(specification)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .queryParam("page", 0)
+                .queryParam("size", 10)
+                .queryParam("direction", "asc")
+                .when()
+                .get()
+                .then()
+                .statusCode(200)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .extract()
+                .body()
+                .asString();
+
+        PageProductDTO page = objectMapper.readValue(content, PageProductDTO.class);
+        var products = page.getContent();
+
+        assertEquals(0, page.getNumber());
+        assertEquals(10, page.getSize());
+        assertEquals(5, page.getTotalElements());
+        assertEquals(1, page.getTotalPages());
+        assertEquals(5, page.getNumberOfElements());
+        assertTrue(page.isFirst());
+        assertTrue(page.isLast());
+
+        ProductResponseDTO productOne = products.get(0);
+
+        assertNotNull(productOne.getId());
+        assertTrue(productOne.getId() > 0);
+        assertEquals("Laptop Stand", productOne.getName());
+        assertEquals(89.0, productOne.getPrice());
+        assertEquals("Aluminum stand for laptops up to 17 inches.", productOne.getDescription());
+
+        ProductResponseDTO productFour = products.get(3);
+
+        assertNotNull(productFour.getId());
+        assertTrue(productFour.getId() > 0);
+        assertEquals("USB-C Hub", productFour.getName());
+        assertEquals(129.5, productFour.getPrice());
+        assertEquals("7-in-1 USB-C hub with HDMI and Ethernet.", productFour.getDescription());
     }
 
     private void mockProduct() {
