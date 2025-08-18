@@ -1,4 +1,4 @@
-package io.github.rubensrabelo.order.unitest.mocks;
+package io.github.rubensrabelo.order.unittest.mocks;
 
 import io.github.rubensrabelo.order.domain.Order;
 

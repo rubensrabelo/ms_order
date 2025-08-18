@@ -9,12 +9,14 @@ import io.github.rubensrabelo.order.application.handler.exceptions.ResourceNotFo
 import io.github.rubensrabelo.order.domain.Order;
 import io.github.rubensrabelo.order.infra.clients.ProductResourceClient;
 import io.github.rubensrabelo.order.infra.repository.OrderRepository;
-import io.github.rubensrabelo.order.unitest.mocks.OrderDTOMock;
-import io.github.rubensrabelo.order.unitest.mocks.OrderEntityMock;
-import io.github.rubensrabelo.order.unitest.mocks.ProductDTOMock;
+import io.github.rubensrabelo.order.unittest.mocks.OrderDTOMock;
+import io.github.rubensrabelo.order.unittest.mocks.OrderEntityMock;
+import io.github.rubensrabelo.order.unittest.mocks.ProductDTOMock;
 import org.junit.jupiter.api.BeforeEach;
-
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -26,20 +28,26 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 public class OrderServiceTest {
 
-    private OrderRepository repository;
-    private ProductResourceClient productClient;
-    private ModelMapper modelMapper;
+    @InjectMocks
     private OrderService service;
+
+    @Mock
+    private OrderRepository repository;
+
+    @Mock
+    private ProductResourceClient productClient;
+
+    @Mock
+    private ModelMapper modelMapper;
 
     @BeforeEach
     void setup() {
-        repository = mock(OrderRepository.class);
-        productClient = mock(ProductResourceClient.class);
-        modelMapper = new ModelMapper();
+        MockitoAnnotations.openMocks(this);
         service = new OrderService(repository, modelMapper, productClient);
     }
 
@@ -49,32 +57,52 @@ public class OrderServiceTest {
         when(repository.findAll(any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of(order)));
 
-        when(productClient.findById(1L)).thenReturn(ResponseEntity.ok(ProductDTOMock.product1()));
-        when(productClient.findById(2L)).thenReturn(ResponseEntity.ok(ProductDTOMock.product2()));
+        when(productClient.findById(1L)).thenReturn(ResponseEntity.ok(ProductDTOMock.createDTO(1)));
+        when(productClient.findById(2L)).thenReturn(ResponseEntity.ok(ProductDTOMock.createDTO(2)));
+
+       when(modelMapper.map(any(Order.class), eq(OrderResponseDTO.class)))
+                .thenAnswer(invocation -> {
+                    Order o = invocation.getArgument(0);
+                    return new OrderResponseDTO(o.getId(), o.getCreated(), o.getTotalAmount());
+                });
 
         Page<OrderResponseDTO> result = service.findAll(Pageable.unpaged());
 
-        assertFalse(result.isEmpty());
+        assertNotNull(result);
+        assertFalse(result.getContent().isEmpty());
+        assertEquals(1, result.getContent().size());
         assertEquals(2, result.getContent().get(0).getProducts().size());
+
+        verify(repository, times(1)).findAll(any(Pageable.class));
+        verify(productClient, times(2)).findById(anyLong());
+        verify(modelMapper, times(result.getContent().size())).map(any(Order.class), eq(OrderResponseDTO.class));
     }
 
     @Test
     void findById() {
         Order order = OrderEntityMock.createEntity();
         when(repository.findById(1L)).thenReturn(Optional.of(order));
-        when(productClient.findById(1L)).thenReturn(ResponseEntity.ok(ProductDTOMock.product1()));
-        when(productClient.findById(2L)).thenReturn(ResponseEntity.ok(ProductDTOMock.product2()));
+        when(productClient.findById(1L)).thenReturn(ResponseEntity.ok(ProductDTOMock.createDTO(1)));
+        when(productClient.findById(2L)).thenReturn(ResponseEntity.ok(ProductDTOMock.createDTO(2)));
+        when(modelMapper.map(any(Order.class), eq(OrderResponseDTO.class)))
+                .thenAnswer(invocation -> {
+                    Order o = invocation.getArgument(0);
+                    return new OrderResponseDTO(o.getId(), o.getCreated(), o.getTotalAmount());
+                });
 
         OrderResponseDTO result = service.findById(1L);
 
         assertNotNull(result);
         assertEquals(2, result.getProducts().size());
+
+        verify(repository, times(1)).findById(1L);
+        verify(productClient, times(2)).findById(anyLong());
+        verify(modelMapper, times(1)).map(any(Order.class), eq(OrderResponseDTO.class));
     }
 
     @Test
     void testFindByIdWithIdDoesNotExist() {
         when(repository.findById(1L)).thenReturn(Optional.empty());
-
         assertThrows(ResourceNotFoundException.class, () -> service.findById(1L));
     }
 
@@ -82,8 +110,8 @@ public class OrderServiceTest {
     void create() {
         OrderCreateDTO createDTO = OrderDTOMock.createDTO();
 
-        when(productClient.findById(1L)).thenReturn(ResponseEntity.ok(ProductDTOMock.product1()));
-        when(productClient.findById(2L)).thenReturn(ResponseEntity.ok(ProductDTOMock.product2()));
+        when(productClient.findById(1L)).thenReturn(ResponseEntity.ok(ProductDTOMock.createDTO(1)));
+        when(productClient.findById(2L)).thenReturn(ResponseEntity.ok(ProductDTOMock.createDTO(2)));
 
         when(repository.save(any(Order.class))).thenAnswer(invocation -> {
             Order order = invocation.getArgument(0);
@@ -95,7 +123,10 @@ public class OrderServiceTest {
 
         assertNotNull(response);
         assertEquals(2, response.getProducts().size());
-        assertEquals(100.0, response.getTotalAmount());
+        assertEquals(30, response.getTotalAmount());
+
+        verify(productClient, times(2)).findById(any(Long.class));
+        verify(repository, times(1)).save(any(Order.class));
     }
 
     @Test
@@ -107,7 +138,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    void testeWhenIntegrationFails() {
+    void testWhenIntegrationFails() {
         OrderCreateDTO createDTO = OrderDTOMock.createDTO();
         when(productClient.findById(1L)).thenThrow(mock(FeignException.class));
 

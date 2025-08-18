@@ -1,4 +1,4 @@
-package io.github.rubensrabelo.order.unitest.mocks;
+package io.github.rubensrabelo.order.unittest.mocks;
 
 import io.github.rubensrabelo.order.application.dto.order.OrderCreateDTO;
 import io.github.rubensrabelo.order.application.dto.order.OrderResponseDTO;
