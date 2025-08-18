@@ -11,6 +11,10 @@ public class OrderCreateDTO {
     public OrderCreateDTO() {
     }
 
+    public OrderCreateDTO(Set<Long> longs) {
+        this.productsId = longs;
+    }
+
     public Set<Long> getProductsId() {
         return productsId;
     }
