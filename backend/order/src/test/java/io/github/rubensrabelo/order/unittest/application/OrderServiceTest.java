@@ -1,6 +1,7 @@
 package io.github.rubensrabelo.order.unittest.application;
 
 import feign.FeignException;
+import feign.Request;
 import io.github.rubensrabelo.order.application.OrderService;
 import io.github.rubensrabelo.order.application.dto.order.OrderCreateDTO;
 import io.github.rubensrabelo.order.application.dto.order.OrderResponseDTO;
@@ -14,16 +15,21 @@ import io.github.rubensrabelo.order.unittest.mocks.OrderEntityMock;
 import io.github.rubensrabelo.order.unittest.mocks.ProductDTOMock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
+import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,6 +37,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ExtendWith(MockitoExtension.class)
 public class OrderServiceTest {
 
     @InjectMocks
@@ -60,7 +68,7 @@ public class OrderServiceTest {
         when(productClient.findById(1L)).thenReturn(ResponseEntity.ok(ProductDTOMock.createDTO(1)));
         when(productClient.findById(2L)).thenReturn(ResponseEntity.ok(ProductDTOMock.createDTO(2)));
 
-       when(modelMapper.map(any(Order.class), eq(OrderResponseDTO.class)))
+        when(modelMapper.map(any(Order.class), eq(OrderResponseDTO.class)))
                 .thenAnswer(invocation -> {
                     Order o = invocation.getArgument(0);
                     return new OrderResponseDTO(o.getId(), o.getCreated(), o.getTotalAmount());
@@ -132,7 +140,11 @@ public class OrderServiceTest {
     @Test
     void testFindProductWithProductNotFound() {
         OrderCreateDTO createDTO = OrderDTOMock.createDTO();
-        when(productClient.findById(1L)).thenThrow(mock(FeignException.NotFound.class));
+
+        Request request = Request.create(Request.HttpMethod.GET, "/products/1", Map.of(), null, Charset.defaultCharset(), null);
+        FeignException.NotFound notFoundException = new FeignException.NotFound("Not Found", request, null, null);
+
+        when(productClient.findById(anyLong())).thenThrow(notFoundException);
 
         assertThrows(ResourceNotFoundException.class, () -> service.create(createDTO));
     }
@@ -140,8 +152,13 @@ public class OrderServiceTest {
     @Test
     void testWhenIntegrationFails() {
         OrderCreateDTO createDTO = OrderDTOMock.createDTO();
-        when(productClient.findById(1L)).thenThrow(mock(FeignException.class));
+
+        Request request = Request.create(Request.HttpMethod.GET, "/products/1", Map.of(), null, Charset.defaultCharset(), null);
+        FeignException feignException = new FeignException.InternalServerError("Server Error", request, null, null);
+
+        when(productClient.findById(anyLong())).thenThrow(feignException);
 
         assertThrows(IntegrationException.class, () -> service.create(createDTO));
     }
+
 }
