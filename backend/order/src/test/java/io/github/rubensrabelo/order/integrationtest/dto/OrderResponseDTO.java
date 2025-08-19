@@ -11,7 +11,6 @@ public class OrderResponseDTO {
 
     private Long id;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
     private LocalDateTime created;
     private double totalAmount;
 

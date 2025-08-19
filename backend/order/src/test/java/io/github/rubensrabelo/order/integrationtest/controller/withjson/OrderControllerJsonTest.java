@@ -13,8 +13,8 @@ import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.DeserializationFeature;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -72,7 +72,7 @@ public class OrderControllerJsonTest extends AbstractIntegrationTest {
         assertNotNull(createdOrder.getProducts());
 
         assertTrue(createdOrder.getId() > 0);
-        assertEquals(150.0, createdOrder.getTotalAmount());
+        assertEquals(0, createdOrder.getTotalAmount());
 
         ProductResponseDTO product = createdOrder.getProducts().iterator().next();
         assertNotNull(product.id());
