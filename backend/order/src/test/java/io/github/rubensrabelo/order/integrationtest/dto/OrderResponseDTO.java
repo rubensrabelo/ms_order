@@ -1,6 +1,6 @@
 package io.github.rubensrabelo.order.integrationtest.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import io.github.rubensrabelo.order.application.dto.product.ProductResponseDTO;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;

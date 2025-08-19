@@ -58,10 +58,10 @@ public class OrderService {
     }
 
     public OrderResponseDTO create(OrderCreateDTO dtoCreate) {
-        Set<ProductResponseDTO> productsDto = dtoCreate.getProductsId().stream()
+        Set<ProductResponseDTO> productsDTO = dtoCreate.getProductsId().stream()
                 .map(this::findProductById)
                 .collect(Collectors.toSet());
-        double total = productsDto.stream()
+        double total = productsDTO.stream()
                 .mapToDouble(ProductResponseDTO::price)
                 .sum();
 
@@ -70,12 +70,8 @@ public class OrderService {
 
         Order savedOrder = repository.save(entity);
 
-        OrderResponseDTO dtoResponse = new OrderResponseDTO(
-                savedOrder.getId(),
-                savedOrder.getCreated(),
-                savedOrder.getTotalAmount()
-        );
-        dtoResponse.setProducts(productsDto);
+        OrderResponseDTO dtoResponse = modelMapper.map(savedOrder, OrderResponseDTO.class);
+        dtoResponse.setProducts(productsDTO);
 
         return dtoResponse;
     }
