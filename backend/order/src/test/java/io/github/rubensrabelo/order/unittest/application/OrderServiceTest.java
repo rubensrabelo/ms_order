@@ -127,6 +127,12 @@ public class OrderServiceTest {
             return order;
         });
 
+        when(modelMapper.map(any(Order.class), eq(OrderResponseDTO.class)))
+                .thenAnswer(invocation -> {
+                    Order o = invocation.getArgument(0);
+                    return new OrderResponseDTO(o.getId(), o.getCreated(), o.getTotalAmount());
+                });
+
         OrderResponseDTO response = service.create(createDTO);
 
         assertNotNull(response);
@@ -135,6 +141,7 @@ public class OrderServiceTest {
 
         verify(productClient, times(2)).findById(any(Long.class));
         verify(repository, times(1)).save(any(Order.class));
+        verify(modelMapper, times(1)).map(any(Order.class), eq(OrderResponseDTO.class));
     }
 
     @Test
