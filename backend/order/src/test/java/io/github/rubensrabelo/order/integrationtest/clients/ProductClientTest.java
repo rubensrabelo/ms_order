@@ -9,17 +9,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest(properties = {
-        "device.service.url=http://localhost:8090",
-        "spring.flyway.enabled=false",
-        "spring.jpa.hibernate.ddl-auto=none",
-        "spring.datasource.url=jdbc:h2:mem:testdb",
-        "spring.datasource.driver-class-name=org.h2.Driver",
-        "spring.datasource.username=sa",
-        "spring.datasource.password="
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestPropertySource(
+        properties = {
+                "product.service.url=http://localhost:8091",
+                "spring.flyway.enabled=false",
+                "spring.jpa.hibernate.ddl-auto=none",
+                "spring.datasource.url=jdbc:h2:mem:testdb",
+                "spring.datasource.driver-class-name=org.h2.Driver",
+                "spring.datasource.username=sa",
+                "spring.datasource.password="
 })
 class ProductClientTest {
 
