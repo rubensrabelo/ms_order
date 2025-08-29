@@ -83,6 +83,9 @@ order/
 
 * **Docker / Docker Compose**: permitem subir o serviço isoladamente ou junto com outros microserviços.
 
+* Erros:
+  * Eu não conseguir realizar o teste de integração com Feign (Irei tentar novamente em outro momento)
+
 ---
 
 ## Como Testar com Docker Compose

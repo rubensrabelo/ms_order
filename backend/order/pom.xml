@@ -81,15 +81,6 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- WireMock para testes -->
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-contract-wiremock</artifactId>
-			<version>3.1.8</version> <!-- Compatível com Spring Boot 3.1+ -->
-			<scope>test</scope>
-		</dependency>
-
-
 		<!-- H2 para evitar erro de datasource -->
 		<dependency>
 			<groupId>com.h2database</groupId>
