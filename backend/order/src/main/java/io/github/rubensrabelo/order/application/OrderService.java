@@ -1,6 +1,8 @@
 package io.github.rubensrabelo.order.application;
 
 import feign.FeignException;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import io.github.rubensrabelo.order.application.dto.order.OrderCreateDTO;
 import io.github.rubensrabelo.order.application.dto.order.OrderResponseDTO;
 import io.github.rubensrabelo.order.application.dto.product.ProductResponseDTO;
@@ -76,6 +78,8 @@ public class OrderService {
         return dtoResponse;
     }
 
+    @CircuitBreaker(name = "productService", fallbackMethod = "fallbackFindProductById")
+    @Retry(name = "productService")
     private ProductResponseDTO findProductById(Long id) {
         try {
             return productClient.findById(id).getBody();
@@ -83,8 +87,17 @@ public class OrderService {
             throw new ResourceNotFoundException("Product with ID " + id + " not found.");
         } catch (FeignException e) {
             throw new IntegrationException(
-                    "Erro ao comunicar com Product Service: " + e.status() + " " + e.getMessage()
+                    "Error communicating with Product Service: " + e.status() + " " + e.getMessage()
             );
         }
+    }
+
+    private ProductResponseDTO fallbackFindProductById(Long id, Throwable ex) {
+        return new ProductResponseDTO(
+                id,
+                "Product Unavailable",
+                "This product could not be loaded.",
+                0.0
+        );
     }
 }
