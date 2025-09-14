@@ -1,15 +1,10 @@
 package io.github.rubensrabelo.order.application;
 
-import feign.FeignException;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.retry.annotation.Retry;
 import io.github.rubensrabelo.order.application.dto.order.OrderCreateDTO;
 import io.github.rubensrabelo.order.application.dto.order.OrderResponseDTO;
 import io.github.rubensrabelo.order.application.dto.product.ProductResponseDTO;
-import io.github.rubensrabelo.order.application.handler.exceptions.IntegrationException;
 import io.github.rubensrabelo.order.application.handler.exceptions.ResourceNotFoundException;
 import io.github.rubensrabelo.order.domain.Order;
-import io.github.rubensrabelo.order.infra.clients.ProductResourceClient;
 import io.github.rubensrabelo.order.infra.repository.OrderRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -23,17 +18,17 @@ import java.util.stream.Collectors;
 public class OrderService {
 
     private final OrderRepository repository;
-    private final ProductResourceClient productClient;
+    private final ProductService productService;
     private final ModelMapper modelMapper;
 
     public OrderService(
             OrderRepository repository,
-            ModelMapper modelMapper,
-            ProductResourceClient productClient
+            ProductService productService,
+            ModelMapper modelMapper
     ) {
         this.repository = repository;
+        this.productService = productService;
         this.modelMapper = modelMapper;
-        this.productClient = productClient;
     }
 
     public Page<OrderResponseDTO> findAll(Pageable pageable) {
@@ -41,7 +36,7 @@ public class OrderService {
                 .map(entity -> {
                     OrderResponseDTO dto = modelMapper.map(entity, OrderResponseDTO.class);
                     Set<ProductResponseDTO> products = entity.getProductsId().stream()
-                            .map(this::findProductById)
+                            .map(productService::findProductById)
                             .collect(Collectors.toSet());
                     dto.setProducts(products);
                     return dto;
@@ -53,7 +48,7 @@ public class OrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found."));
         OrderResponseDTO dto = modelMapper.map(entity, OrderResponseDTO.class);
         Set<ProductResponseDTO> products = entity.getProductsId().stream()
-                .map(this::findProductById)
+                .map(productService::findProductById)
                 .collect(Collectors.toSet());
         dto.setProducts(products);
         return dto;
@@ -61,7 +56,7 @@ public class OrderService {
 
     public OrderResponseDTO create(OrderCreateDTO dtoCreate) {
         Set<ProductResponseDTO> productsDTO = dtoCreate.getProductsId().stream()
-                .map(this::findProductById)
+                .map(productService::findProductById)
                 .collect(Collectors.toSet());
         double total = productsDTO.stream()
                 .mapToDouble(ProductResponseDTO::price)
@@ -76,28 +71,5 @@ public class OrderService {
         dtoResponse.setProducts(productsDTO);
 
         return dtoResponse;
-    }
-
-    @CircuitBreaker(name = "productService", fallbackMethod = "fallbackFindProductById")
-    @Retry(name = "productService")
-    private ProductResponseDTO findProductById(Long id) {
-        try {
-            return productClient.findById(id).getBody();
-        } catch (FeignException.NotFound e) {
-            throw new ResourceNotFoundException("Product with ID " + id + " not found.");
-        } catch (FeignException e) {
-            throw new IntegrationException(
-                    "Error communicating with Product Service: " + e.status() + " " + e.getMessage()
-            );
-        }
-    }
-
-    private ProductResponseDTO fallbackFindProductById(Long id, Throwable ex) {
-        return new ProductResponseDTO(
-                id,
-                "Product Unavailable",
-                "This product could not be loaded.",
-                0.0
-        );
     }
 }
