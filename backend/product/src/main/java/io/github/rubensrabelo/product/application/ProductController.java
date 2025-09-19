@@ -1,8 +1,8 @@
 package io.github.rubensrabelo.product.application;
 
-import io.github.rubensrabelo.product.application.dto.ProductCreateDTO;
-import io.github.rubensrabelo.product.application.dto.ProductResponseDTO;
-import io.github.rubensrabelo.product.application.dto.ProductUpdateDTO;
+import io.github.rubensrabelo.product.application.dto.product.ProductCreateDTO;
+import io.github.rubensrabelo.product.application.dto.product.ProductResponseDTO;
+import io.github.rubensrabelo.product.application.dto.product.ProductUpdateDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

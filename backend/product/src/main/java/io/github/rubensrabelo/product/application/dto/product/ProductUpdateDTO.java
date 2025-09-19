@@ -1,4 +1,4 @@
-package io.github.rubensrabelo.product.application.dto;
+package io.github.rubensrabelo.product.application.dto.product;
 
 public class ProductUpdateDTO {
     private String name;

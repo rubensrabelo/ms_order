@@ -1,8 +1,8 @@
 package io.github.rubensrabelo.product.application;
 
-import io.github.rubensrabelo.product.application.dto.ProductCreateDTO;
-import io.github.rubensrabelo.product.application.dto.ProductResponseDTO;
-import io.github.rubensrabelo.product.application.dto.ProductUpdateDTO;
+import io.github.rubensrabelo.product.application.dto.product.ProductCreateDTO;
+import io.github.rubensrabelo.product.application.dto.product.ProductResponseDTO;
+import io.github.rubensrabelo.product.application.dto.product.ProductUpdateDTO;
 import io.github.rubensrabelo.product.application.handler.exceptions.DatabaseException;
 import io.github.rubensrabelo.product.application.handler.exceptions.ResourceNotFoundException;
 import io.github.rubensrabelo.product.domain.Product;

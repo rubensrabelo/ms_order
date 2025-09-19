@@ -1,10 +1,12 @@
 spring:
   application:
     name: msorder
+
   datasource:
     url: jdbc:postgresql://db:5432/db_order
     username: postgres
     password: postgres
+
   jpa:
     hibernate:
       ddl-auto: none
@@ -12,6 +14,12 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: guest
+    password: guest
 
 eureka:
   client:
@@ -24,18 +32,3 @@ eureka:
 
 server:
   port: 0
-
-#resilience4j:
-#  circuitbreaker:
-#    instances:
-#      productService:
-#        slidingWindowSize: 10
-#        failureRateThreshold: 50
-#        waitDurationInOpenState: 5s
-#        permittedNumberOfCallsInHalfOpenState: 3
-#        automaticTransitionFromOpenToHalfOpenEnabled: true
-#  retry:
-#    instances:
-#      productService:
-#        maxAttempts: 3
-#        waitDuration: 500ms

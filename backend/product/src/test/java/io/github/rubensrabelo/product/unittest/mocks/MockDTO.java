@@ -1,14 +1,11 @@
 package io.github.rubensrabelo.product.unittest.mocks;
 
-import io.github.rubensrabelo.product.application.dto.ProductCreateDTO;
-import io.github.rubensrabelo.product.application.dto.ProductResponseDTO;
-import io.github.rubensrabelo.product.application.dto.ProductUpdateDTO;
-import io.github.rubensrabelo.product.domain.Product;
+import io.github.rubensrabelo.product.application.dto.product.ProductCreateDTO;
+import io.github.rubensrabelo.product.application.dto.product.ProductResponseDTO;
+import io.github.rubensrabelo.product.application.dto.product.ProductUpdateDTO;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class MockDTO {
 

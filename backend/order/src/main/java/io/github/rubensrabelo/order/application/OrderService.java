@@ -5,6 +5,7 @@ import io.github.rubensrabelo.order.application.dto.order.OrderResponseDTO;
 import io.github.rubensrabelo.order.application.dto.product.ProductResponseDTO;
 import io.github.rubensrabelo.order.application.handler.exceptions.ResourceNotFoundException;
 import io.github.rubensrabelo.order.domain.Order;
+import io.github.rubensrabelo.order.infra.queue.OrderProducer;
 import io.github.rubensrabelo.order.infra.repository.OrderRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -20,15 +21,18 @@ public class OrderService {
     private final OrderRepository repository;
     private final ProductService productService;
     private final ModelMapper modelMapper;
+    private final OrderProducer orderProducer;
 
     public OrderService(
             OrderRepository repository,
             ProductService productService,
-            ModelMapper modelMapper
+            ModelMapper modelMapper,
+            OrderProducer orderProducer
     ) {
         this.repository = repository;
         this.productService = productService;
         this.modelMapper = modelMapper;
+        this.orderProducer = orderProducer;
     }
 
     public Page<OrderResponseDTO> findAll(Pageable pageable) {
@@ -66,6 +70,8 @@ public class OrderService {
         entity.setProductsId(dtoCreate.getProductsId());
 
         Order savedOrder = repository.save(entity);
+
+        orderProducer.sendOrderCreated(entity);
 
         OrderResponseDTO dtoResponse = modelMapper.map(savedOrder, OrderResponseDTO.class);
         dtoResponse.setProducts(productsDTO);
